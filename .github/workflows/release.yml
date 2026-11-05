@@ -1,0 +1,38 @@
+# リリースを作る：GitHub の「Actions」→「リリースを作る」→「Run workflow」を押すと、
+# package.json のバージョンで拡張機能の zip を作り、Releases に公開する。
+# リリースノートは .github/release-notes/v<バージョン>.md（なければ自動生成）
+name: リリースを作る
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm test
+      - run: node build.mjs
+      - name: Releases に公開
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="v${VERSION}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "::error::${TAG} のリリースはすでにあります。package.json のバージョンを上げてから実行してください。"
+            exit 1
+          fi
+          NOTES=".github/release-notes/${TAG}.md"
+          if [ -f "$NOTES" ]; then NOTE_ARGS=(--notes-file "$NOTES"); else NOTE_ARGS=(--generate-notes); fi
+          gh release create "$TAG" \
+            --target "$GITHUB_SHA" \
+            --title "学情プラス ${TAG}" \
+            "${NOTE_ARGS[@]}" \
+            dist/gakujo-plus-chrome-${VERSION}.zip \
+            dist/gakujo-plus-firefox-${VERSION}.zip \
+            dist/gakujo-plus-safari-${VERSION}.zip
