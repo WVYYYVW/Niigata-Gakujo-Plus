@@ -1,0 +1,28 @@
+:root{color-scheme:light;--p:#0b57d0;--onp:#fff;--pc:#d3e3fd;--bg:#ffffff;--s1:#f8fafd;--s2:#f0f4f9;--fg:#1f1f1f;--sub:#444746;--line:#e1e3e1;--err:#b3261e;--errc:#f9dedc;--ok:#146c2e;--okc:#c4eed0;--warnc:#ffefc9}
+html.dark{color-scheme:dark;--p:#a8c7fa;--onp:#062e6f;--pc:#0842a0;--bg:#1e1f20;--s1:#131314;--s2:#282a2c;--fg:#e3e3e3;--sub:#c4c7c5;--line:#444746;--err:#f2b8b5;--errc:#8c1d18;--ok:#6dd58c;--okc:#0f5223;--warnc:#5c4300}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.65 "Google Sans Text","Noto Sans JP",system-ui,-apple-system,"Hiragino Sans",sans-serif}
+main{max-width:860px;margin:0 auto;padding:16px 18px 48px}
+h1{font-size:22px;font-weight:500;margin:4px 0 6px}
+h2{font-size:16px;font-weight:600;margin:22px 0 8px}
+p{margin:6px 0}
+.note{color:var(--sub);font-size:13px}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:10px 0}
+.warn{background:var(--warnc);border-color:transparent}
+.err{background:var(--errc);border-color:transparent}
+.ok{color:var(--ok)}
+button,.btn{font:inherit;font-weight:600;height:40px;padding:0 18px;border-radius:20px;border:1px solid var(--line);background:var(--bg);color:var(--p);cursor:pointer}
+button.primary{background:var(--p);border-color:var(--p);color:var(--onp)}
+button:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.drop{display:block;border:2px dashed var(--line);border-radius:16px;padding:24px;text-align:center;cursor:pointer}
+.drop input{display:none}
+.progress{height:6px;border-radius:3px;background:var(--s2);overflow:hidden;margin-top:8px}
+.progress div{height:100%;background:var(--p);width:0}
+canvas{display:block;width:100%;height:auto;border-radius:8px;background:#fff;margin:8px 0 16px;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.pager{position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:2;border-bottom:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{color:var(--sub);font-weight:500}
+details{margin:6px 0}
+summary{cursor:pointer;color:var(--p);font-weight:500}

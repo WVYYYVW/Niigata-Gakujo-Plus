@@ -1,0 +1,16 @@
+{
+  "name": "gakujo-plus",
+  "version": "1.2.1",
+  "private": true,
+  "description": "新潟大学 学務情報システム（学情）を使いやすくする拡張機能（gakujo-chan-extender をもとに再構築）",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node test/run.mjs"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "jsdom": "^24.1.3",
+    "pdfjs-dist": "^4.10.38"
+  }
+}

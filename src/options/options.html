@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>学情プラス 設定</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div class="logo">学</div>
+      <div>
+        <h1>学情プラス</h1>
+        <p class="sub">新潟大学 学務情報システムを使いやすくする拡張機能</p>
+      </div>
+    </header>
+
+    <a class="open" href="https://gakujo.iess.niigata-u.ac.jp/campusweb/campusportal.do" target="_blank" rel="noopener">学情を開く</a>
+
+    <section>
+      <h2>表示</h2>
+      <label class="row"><span><b>新しい画面を使う</b><small>オフにするとログイン後は学情の元の画面になります。</small></span><input type="checkbox" data-key="newUi"></label>
+      <label class="row"><span><b>テーマ</b></span>
+        <select data-key="theme"><option value="auto">端末の設定に合わせる</option><option value="light">ライト</option><option value="dark">ダーク</option></select></label>
+      <label class="row"><span><b>旧画面の改善</b><small>旧画面でも並べ替え・締切表示・平均点/GPA・一括既読を使えるようにします。</small></span><input type="checkbox" data-key="classicEnhance"></label>
+    </section>
+
+    <section>
+      <h2>ログイン時間の自動延長</h2>
+      <label class="row"><span><b>自動延長</b><small>学情のログイン時間（20分）が切れる前に自動で延長します。</small></span><input type="checkbox" data-key="extendEnabled"></label>
+      <label class="row"><span><b>延長するタイミング</b><small>残り時間がこの値以下になったら延長します。</small></span>
+        <select data-key="extendThreshold" data-num>
+          <option value="6">残り6分</option><option value="8">残り8分</option><option value="10">残り10分</option>
+          <option value="12">残り12分</option><option value="15">残り15分</option><option value="18">残り18分</option>
+        </select></label>
+      <label class="row"><span><b>延長を続ける時間</b><small>最後に画面を操作してからこの時間が過ぎると延長をやめます。</small></span>
+        <select data-key="extendLimit" data-num>
+          <option value="30">30分</option><option value="60">1時間</option><option value="120">2時間</option>
+          <option value="180">3時間</option><option value="240">4時間</option><option value="480">8時間</option><option value="0">無制限</option>
+        </select></label>
+    </section>
+
+    <section>
+      <h2>連絡</h2>
+      <label class="row"><span><b>一括既読の既定件数</b></span>
+        <select data-key="bulkCount" data-num>
+          <option value="5">5件</option><option value="10">10件</option><option value="20">20件</option>
+          <option value="30">30件</option><option value="50">50件</option><option value="100">100件</option>
+        </select></label>
+    </section>
+
+    <section>
+      <h2>2段階認証</h2>
+      <label class="row"><span><b>認証コードの自動入力</b><small id="keyStatus"></small></span><input type="checkbox" data-key="twofaEnabled"></label>
+      <label class="row"><span><b>自動で送信して認証を通過</b><small>鍵が登録されていれば、コードを入力して自動で送信します。PCを共用する場合はオフにしてください。</small></span><input type="checkbox" data-key="twofaAutoSubmit"></label>
+      <div class="row col">
+        <span><b>秘密鍵の登録</b><small>認証アプリに登録したときの秘密鍵（または otpauth:// のURI）。この端末のブラウザ内にだけ保存されます。</small></span>
+        <div class="inline">
+          <input id="key" type="password" autocomplete="off" placeholder="秘密鍵">
+          <button id="saveKey">保存</button>
+          <button id="delKey" class="text">削除</button>
+        </div>
+        <small id="keyMsg"></small>
+      </div>
+    </section>
+
+    <p class="foot">学情プラス v<span id="ver"></span> — <a href="https://github.com/koji-genba/gakujo-chan-extender" target="_blank" rel="noopener">gakujo-chan-extender</a>（MIT License）を元にした非公式の拡張機能です。学情以外へデータを送信しません。</p>
+  </main>
+  <script src="../common/ext.js"></script>
+  <script src="../common/totp.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
