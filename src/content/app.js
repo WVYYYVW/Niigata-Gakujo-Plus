@@ -531,19 +531,7 @@
           'label',
           { class: 'search' },
           icon('search'),
-          h('input', {
-            type: 'search',
-            placeholder: '課題名・科目名で検索',
-            value: S.taskQuery,
-            oninput: (e) => {
-              S.taskQuery = e.target.value;
-              const pos = e.target.selectionStart;
-              render();
-              const inp = mainEl.querySelector('input[type="search"]');
-              inp.focus();
-              inp.setSelectionRange(pos, pos);
-            },
-          })
+          searchBox('taskQuery', '課題名・科目名で検索')
         ),
         h(
           'select',
@@ -845,19 +833,7 @@
           'label',
           { class: 'search' },
           icon('search'),
-          h('input', {
-            type: 'search',
-            placeholder: '表題・差出人・科目で検索',
-            value: S.noticeQuery,
-            oninput: (e) => {
-              S.noticeQuery = e.target.value;
-              const pos = e.target.selectionStart;
-              render();
-              const inp = mainEl.querySelector('input[type="search"]');
-              inp.focus();
-              inp.setSelectionRange(pos, pos);
-            },
-          })
+          searchBox('noticeQuery', '表題・差出人・科目で検索')
         ),
         h(
           'select',
@@ -1775,6 +1751,53 @@
     if (!X.data.courses && !isBusy()) GX.fetchCourses().then((v) => ((X.data.courses = v), draw())).catch(() => {});
   };
 
+  // ----- 検索欄（日本語入力に対応） -----
+  // 入力のたびに画面を描き直すと、日本語入力（IME）の変換中の文字が確定前に壊れる（「しんけい」→「sいnnkえい」）。
+  // 変換中（compositionstart〜compositionend）は描き直さず、確定してから少し待って結果を更新する
+  const searchBox = (key, placeholder) => {
+    const inp = h('input', { type: 'search', placeholder, autocomplete: 'off', enterkeyhint: 'search' });
+    inp.value = S[key] || '';
+    inp.dataset.q = key;
+    let composing = false;
+    let timer = null;
+    const apply = () => {
+      if ((S[key] || '') === inp.value) return;
+      S[key] = inp.value;
+      const pos = inp.selectionStart;
+      render();
+      const el = mainEl.querySelector(`input[data-q="${key}"]`);
+      if (el) {
+        el.focus();
+        try {
+          el.setSelectionRange(pos, pos);
+        } catch (e) {}
+      }
+    };
+    const later = (ms) => {
+      clearTimeout(timer);
+      timer = setTimeout(apply, ms);
+    };
+    inp.addEventListener('compositionstart', () => {
+      composing = true;
+      clearTimeout(timer);
+    });
+    inp.addEventListener('compositionend', () => {
+      composing = false;
+      later(150);
+    });
+    inp.addEventListener('input', (e) => {
+      if (composing || e.isComposing) return;
+      later(200);
+    });
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.isComposing && !composing) {
+        clearTimeout(timer);
+        apply();
+      }
+    });
+    return inp;
+  };
+
   // ----- 全体検索（課題・連絡・科目・成績・ピン留め） -----
   const openSearch = () => {
     const input = h('input', { class: 'input', type: 'search', placeholder: '課題・連絡・科目・成績を検索', style: { width: '100%', height: '48px', fontSize: '16px' } });
@@ -1815,7 +1838,8 @@
         !reports.length && !notices.length && !courses.length ? h('p', { class: 'note' }, '見つかりませんでした。連絡は「未読」と、読み込み済みの「種類別」から探します。') : null
       );
     };
-    input.addEventListener('input', run);
+    input.addEventListener('input', (e) => !e.isComposing && run());
+    input.addEventListener('compositionend', run);
     const sheet = openSheet({ title: '検索', body: h('div', {}, input, results) });
     run();
     setTimeout(() => input.focus(), 50);
@@ -2132,17 +2156,9 @@
       return i < 0 ? '' : `…${normName(c.text).slice(Math.max(0, i - 20), i + q.length + 30)}…`;
     };
     const list = st.d.courses.filter(hits).sort((a, b) => (a.grade === st.g ? 0 : 1) - (b.grade === st.g ? 0 : 1) || a.grade - b.grade || a.code.localeCompare(b.code));
-    const input = h('input', { class: 'input', type: 'search', placeholder: '科目名・本文（キーワード）で検索', value: S.medQuery || '', style: { flex: 1, minWidth: '200px' } });
-    input.addEventListener('input', () => {
-      S.medQuery = input.value;
-      clearTimeout(input._t);
-      input._t = setTimeout(() => {
-        render();
-        const again = mainEl.querySelector('input[type=search]');
-        again?.focus();
-        again?.setSelectionRange(again.value.length, again.value.length);
-      }, 250);
-    });
+    const input = searchBox('medQuery', '科目名・本文（キーワード）で検索');
+    input.classList.add('input');
+    Object.assign(input.style, { flex: 1, minWidth: '200px' });
     return h(
       'div',
       {},
@@ -2166,6 +2182,7 @@
 
   // ----- 新機能のお知らせ（更新後に一度だけ表示） -----
   const WHATS_NEW = [
+    '検索欄で日本語を入力すると文字が崩れる不具合を修正（課題・連絡・講義概要の検索）',
     '医学科モード：講義概要の PDF を取り込むと、授業日程を「予定」とホームに表示（ページごとに画像でも照合し、確実に読めた週だけを表示）',
     '医学科モード：授業日程をカレンダーに書き出し、各科目の講義概要を原本のページで表示・本文を検索',
     '連絡の添付ファイルをまとめて zip で保存',
