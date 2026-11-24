@@ -35,4 +35,5 @@ jobs:
             "${NOTE_ARGS[@]}" \
             dist/gakujo-plus-chrome-${VERSION}.zip \
             dist/gakujo-plus-firefox-${VERSION}.zip \
-            dist/gakujo-plus-safari-${VERSION}.zip
+            dist/gakujo-plus-safari-${VERSION}.zip \
+            dist/gakujo-plus-orion-${VERSION}.xpi

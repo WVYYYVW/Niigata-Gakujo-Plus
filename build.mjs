@@ -64,6 +64,14 @@ const targets = {
     },
   }),
   safari: (m) => m,
+  // iPhone・iPad・Mac の Orion ブラウザ向け（ファイルから入れる用）。Firefox 版から「対応バージョンの指定」だけ外す
+  // （Orion は Firefox のバージョン番号を名乗らないため、指定があると入れられないことがある）
+  orion: (m) => {
+    const f = targets.firefox(m);
+    const { gecko } = f.browser_specific_settings;
+    f.browser_specific_settings = { gecko: { id: gecko.id, data_collection_permissions: gecko.data_collection_permissions } };
+    return f;
+  },
 };
 
 rmSync(DIST, { recursive: true, force: true });
@@ -74,8 +82,13 @@ for (const [name, transform] of Object.entries(targets)) {
   writeFileSync(join(out, 'manifest.json'), JSON.stringify(transform(base()), null, 2));
   cpSync('LICENSE', join(out, 'LICENSE'));
   const zip = `gakujo-plus-${name}-${pkg.version}.zip`;
-  execSync(`cd ${out} && zip -qr ../${zip} .`);
+  execSync(`cd ${out} && zip -qr -X ../${zip} .`);
   console.log(`✓ ${out}  →  ${DIST}/${zip}`);
+  // Orion などは「パッケージ化された拡張機能」（manifest.json が直下にある zip。拡張子 .xpi）をファイルから入れられる
+  if (name === 'orion') {
+    cpSync(join(DIST, zip), join(DIST, `gakujo-plus-orion-${pkg.version}.xpi`));
+    console.log(`✓ ${DIST}/gakujo-plus-orion-${pkg.version}.xpi`);
+  }
 }
 
 // 動作確認用：content script をひとつに連結したもの（ブラウザのコンソールに貼って試せる）

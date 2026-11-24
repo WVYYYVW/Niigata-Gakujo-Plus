@@ -25,18 +25,30 @@
   GX.fiscalYear = (d = new Date()) => (d.getMonth() < 3 ? d.getFullYear() - 1 : d.getFullYear());
 
   // 設定は sync（端末間で同期）。2段階認証の鍵だけは local（同期しない）
-  const area = () => GX.api?.storage?.sync ?? GX.api?.storage?.local;
+  // sync がないブラウザ・使えないブラウザ（Orion など）では local に保存する
+  let syncBroken = false;
+  const area = () => (!syncBroken && GX.api?.storage?.sync) || GX.api?.storage?.local;
 
   GX.getSettings = async () => {
     try {
       const got = await area().get(GX.DEFAULTS);
       return { ...GX.DEFAULTS, ...got };
     } catch (e) {
+      if (!syncBroken && GX.api?.storage?.local) {
+        syncBroken = true;
+        return GX.getSettings();
+      }
       return { ...GX.DEFAULTS };
     }
   };
   GX.setSettings = async (patch) => {
-    await area().set(patch);
+    try {
+      await area().set(patch);
+    } catch (e) {
+      if (syncBroken || !GX.api?.storage?.local) throw e;
+      syncBroken = true;
+      await area().set(patch);
+    }
     return GX.getSettings();
   };
   GX.onSettingsChanged = (fn) => {

@@ -1,6 +1,6 @@
 {
   "name": "gakujo-plus",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "private": true,
   "description": "新潟大学 学務情報システム（学情）を使いやすくする拡張機能（gakujo-chan-extender をもとに再構築）",
   "type": "module",
