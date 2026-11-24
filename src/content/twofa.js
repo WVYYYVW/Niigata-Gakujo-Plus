@@ -104,7 +104,7 @@
         </details>
       </div>`;
     document.documentElement.appendChild(host);
-    document.documentElement.style.overflow = 'hidden';
+    GX.cover(true);
     const $ = (id) => host.querySelector('#' + id);
     const setStatus = (t, ok) => {
       $('gx-status').textContent = t;
@@ -123,7 +123,7 @@
     });
     $('gx-orig').addEventListener('click', () => {
       host.remove();
-      document.documentElement.style.overflow = '';
+      GX.cover(false);
       sessionStorage.setItem('gx-auth-classic', '1');
     });
     $('gx-save').addEventListener('click', async () => {

@@ -95,26 +95,10 @@
     medWeek: 0,
     medQuery: '',
   };
-  let host, root, appEl, mainEl, railEl, bottomEl, timerEl, refreshBtn, oldViewport;
+  let host, root, appEl, mainEl, railEl, bottomEl, timerEl, refreshBtn;
 
   // ===== 画面の切替（新UI ⇔ 旧画面） =====
   const MODE_KEY = 'gx-mode';
-  const setViewport = (on) => {
-    let meta = document.querySelector('meta[name="viewport"]');
-    if (on) {
-      if (!meta) {
-        meta = document.createElement('meta');
-        meta.name = 'viewport';
-        document.head.appendChild(meta);
-        oldViewport = null;
-      } else if (oldViewport === undefined) oldViewport = meta.content;
-      meta.content = 'width=device-width, initial-scale=1, viewport-fit=cover';
-    } else if (meta) {
-      if (oldViewport) meta.content = oldViewport;
-      else meta.remove();
-    }
-  };
-
   let fab;
   const showFab = () => {
     if (fab) return (fab.style.display = 'block');
@@ -144,8 +128,7 @@
       return;
     }
     host.style.display = 'none';
-    document.documentElement.style.overflow = '';
-    setViewport(false);
+    GX.cover(false);
     showFab();
   };
 
@@ -153,8 +136,7 @@
   const openNewUi = () => {
     if (!host) build();
     host.style.display = 'block';
-    document.documentElement.style.overflow = 'hidden';
-    setViewport(true);
+    GX.cover(true);
     if (!S.data.reports) {
       loadCache();
       render();
@@ -2182,6 +2164,7 @@
 
   // ----- 新機能のお知らせ（更新後に一度だけ表示） -----
   const WHATS_NEW = [
+    'スマホ・タブレット（iPhone・iPad の Orion など）で、ログイン画面や新しい画面が縮小表示される不具合を修正',
     '検索欄で日本語を入力すると文字が崩れる不具合を修正（課題・連絡・講義概要の検索）',
     '医学科モード：講義概要の PDF を取り込むと、授業日程を「予定」とホームに表示（ページごとに画像でも照合し、確実に読めた週だけを表示）',
     '医学科モード：授業日程をカレンダーに書き出し、各科目の講義概要を原本のページで表示・本文を検索',

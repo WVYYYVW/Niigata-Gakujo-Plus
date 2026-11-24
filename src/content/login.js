@@ -31,6 +31,7 @@
 #gx-auth details{margin-top:18px;font-size:14px}
 #gx-auth summary{cursor:pointer;color:#0b57d0;font-weight:500}
 #gx-auth .gx-code{letter-spacing:.4em;font-size:22px;text-align:center}
+@media (max-width:480px){#gx-auth{align-items:flex-start;padding:max(16px,env(safe-area-inset-top)) 12px max(16px,env(safe-area-inset-bottom))!important}#gx-auth .gx-card{padding:28px 20px 22px;border-radius:24px}#gx-auth h1{font-size:24px}}
 `;
 
   const addStyle = () => {
@@ -63,7 +64,7 @@
   // 元のページの表示を戻す（「元の画面で表示」用）
   const showOriginal = (host) => {
     host.remove();
-    document.documentElement.style.overflow = '';
+    GX.cover(false);
     sessionStorage.setItem('gx-auth-classic', '1');
   };
 
@@ -149,7 +150,7 @@
     };
 
     document.documentElement.appendChild(host);
-    document.documentElement.style.overflow = 'hidden';
+    GX.cover(true);
     setTimeout(() => (user.value ? pass : user).focus(), 50);
   };
 

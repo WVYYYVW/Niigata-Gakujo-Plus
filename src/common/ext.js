@@ -97,6 +97,37 @@
       }, timeout);
     });
 
+  // 新しい画面（ログイン・2段階認証・メイン）を出している間は、元のページを表示しない。
+  // 元のページは横幅の広い表を含むため、スマホ（特に iPhone・iPad の WebKit）では
+  // ページ全体が縮小表示され、新しい画面まで小さくなってしまう。元のフォームは非表示でも送信できる
+  GX.cover = (on) => {
+    const de = document.documentElement;
+    if (!document.getElementById('gx-cover-style')) {
+      const st = document.createElement('style');
+      st.id = 'gx-cover-style';
+      st.textContent =
+        'html.gx-cover{overflow:hidden!important;width:100%!important;min-width:0!important;max-width:100%!important;height:100%!important;-webkit-text-size-adjust:100%!important;text-size-adjust:100%!important}' +
+        'html.gx-cover>body{display:none!important}' +
+        'html.gx-cover>frameset{display:none!important}';
+      (document.head || de).appendChild(st);
+    }
+    de.classList.toggle('gx-cover', !!on);
+    let meta = document.querySelector('meta[name="viewport"]');
+    if (on) {
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.name = 'viewport';
+        (document.head || de).appendChild(meta);
+      }
+      if (meta.dataset.gxOld === undefined) meta.dataset.gxOld = meta.content || '';
+      meta.content = 'width=device-width, initial-scale=1, viewport-fit=cover';
+    } else if (meta && meta.dataset.gxOld !== undefined) {
+      if (meta.dataset.gxOld) meta.content = meta.dataset.gxOld;
+      else meta.remove();
+    }
+    de.style.overflow = on ? 'hidden' : '';
+  };
+
   GX.isTop = window.top === window;
   GX.isPortalMain = () =>
     /\/campusweb\/campusportal\.do/.test(location.pathname) && /[?&]page=main\b/.test(location.search);
